@@ -5,7 +5,6 @@ import re
 import os
 import math
 import argparse
-import itertools
 import numpy as np
 
 frame_expression = re.compile('^REMARK.+ENDMDL$', re.DOTALL|re.MULTILINE)
@@ -81,18 +80,18 @@ def find_closest(cholesterol_atoms, water_oxygens, dist):
 
 def how_many_left(cholesterol_atoms, water_oxygens, atom_numbers, dist):
     """
-    Sprawdza, jak wiele z cząsteczek wody (konkretnie atomów tlenu) o numerach sposród atom_numbers pozostało ciagle
+    Sprawdza, które z cząsteczek wody (konkretnie atomów tlenu) o numerach sposród atom_numbers pozostały ciagle
     w oległości nie większej niż dist od cholesterolu
     :return: int
     """
-    num = 0
+    atom_nums = []
     for oxygen in water_oxygens:
         if oxygen.number in atom_numbers:
             for atom in cholesterol_atoms:
                 if distance(oxygen.coordinates, atom.coordinates) <= dist:
-                    num += 1
+                    atom_nums.append(atom.number)
                     break
-    return num
+    return set(atom_nums)
 
 def analysis(infile, frame_count, particle, distance, separate):
     i = 0
@@ -107,6 +106,9 @@ def analysis(infile, frame_count, particle, distance, separate):
                 if atom.atom in separate:
                     separate_atoms.append(atom)
                     particle_atoms.remove(atom)
+
+        import pdb
+        pdb.set_trace()
         if not i % frame_count:
             atom_nums = find_closest(particle_atoms, water_oxygens, distance)
             how_many.append(len(atom_nums))
@@ -114,10 +116,14 @@ def analysis(infile, frame_count, particle, distance, separate):
                 separate_atom_nums = find_closest(separate_atoms, water_oxygens, distance)
                 how_many_separate.append(len(separate_atom_nums))
         else:
-            how_many.append(how_many_left(particle_atoms, water_oxygens, atom_nums, distance))
+            atom_nums = set(how_many_left(particle_atoms, water_oxygens, atom_nums, distance)) and atom_nums
+            how_many.append(len(atom_nums))
             if separate:
-                how_many_separate.append(how_many_left(separate_atoms, water_oxygens, separate_atom_nums, distance))
+                separate_atom_nums = how_many_left(separate_atoms, water_oxygens, separate_atom_nums, distance) \
+                                        and separate_atom_nums
+                how_many_separate.append(separate_atom_nums)
         i += 1
+        print how_many
     ar = np.array([how_many[x:x + frame_count] for x in range(0, len(how_many) / frame_count * frame_count, frame_count)])
     if separate:
         sep_ar = np.array([how_many_separate[x:x + frame_count] for x in range(0, len(how_many_separate) /
