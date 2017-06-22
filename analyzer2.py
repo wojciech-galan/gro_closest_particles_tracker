@@ -89,7 +89,7 @@ def how_many_left(cholesterol_atoms, water_oxygens, atom_numbers, dist):
         if oxygen.number in atom_numbers:
             for atom in cholesterol_atoms:
                 if distance(oxygen.coordinates, atom.coordinates) <= dist:
-                    atom_nums.append(atom.number)
+                    atom_nums.append(oxygen.number)
                     break
     return set(atom_nums)
 
@@ -107,8 +107,6 @@ def analysis(infile, frame_count, particle, distance, separate):
                     separate_atoms.append(atom)
                     particle_atoms.remove(atom)
 
-        import pdb
-        pdb.set_trace()
         if not i % frame_count:
             atom_nums = find_closest(particle_atoms, water_oxygens, distance)
             how_many.append(len(atom_nums))
@@ -116,14 +114,13 @@ def analysis(infile, frame_count, particle, distance, separate):
                 separate_atom_nums = find_closest(separate_atoms, water_oxygens, distance)
                 how_many_separate.append(len(separate_atom_nums))
         else:
-            atom_nums = set(how_many_left(particle_atoms, water_oxygens, atom_nums, distance)) and atom_nums
+            atom_nums = set(how_many_left(particle_atoms, water_oxygens, atom_nums, distance)) & atom_nums
             how_many.append(len(atom_nums))
             if separate:
                 separate_atom_nums = how_many_left(separate_atoms, water_oxygens, separate_atom_nums, distance) \
-                                        and separate_atom_nums
+                                        & separate_atom_nums
                 how_many_separate.append(separate_atom_nums)
         i += 1
-        print how_many
     ar = np.array([how_many[x:x + frame_count] for x in range(0, len(how_many) / frame_count * frame_count, frame_count)])
     if separate:
         sep_ar = np.array([how_many_separate[x:x + frame_count] for x in range(0, len(how_many_separate) /
