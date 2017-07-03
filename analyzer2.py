@@ -135,7 +135,7 @@ if __name__ == '__main__':
     parser.add_argument('outfile', help='plik wynikowy')
     parser.add_argument('frame_count', help='ile ramek. Np. 100 oznacza "ramkę 0" + 99 kolejnych, w których \
     obserwujesz zachowanie wody', type=int)
-    parser.add_argument('--distance', '-d', help='odległość od cholesterolu w Angstremach', type=int, default=4)
+    parser.add_argument('--distance', '-d', help='odległość od cholesterolu w Angstremach', type=float, default=4)
     parser.add_argument('--particle', '-p', help='cząsteczka, którą chcesz analizowac', type=str, default='CHL')
     parser.add_argument('--separate', '-s',
                         help='''atomy, które chcesz analizować osobno od reszty analizowanej cząsteczki.
