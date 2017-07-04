@@ -49,6 +49,7 @@ def parse_frame(frame_text, particle_):
     particle_atoms, water_oxygens = [], []
     model_part = re.search(model_expression, frame_text)
     _, model, rest = frame_text[model_part.start():].split(None, 2)
+    # print frame_text[:model_part.start()].split('\n')[1]
     ter_part = re.search(ter_expression, rest)
     new_rest = rest[:ter_part.start()].strip()
     # teraz każda z tych linii powinna zaczynac sie od ATOM
@@ -142,7 +143,11 @@ if __name__ == '__main__':
                         Oddzielone przecinkami, np: HO3,O3''',
                         type=str, default='')
     args = parser.parse_args()
-    res = analysis(args.frames, args.frame_count, args.particle, args.distance, tuple(args.separate.split(',')))
+    if args.separate:
+        separate = tuple(args.separate.split(','))
+    else:
+        separate = False
+    res = analysis(args.frames, args.frame_count, args.particle, args.distance, separate)
     print res
     np.savetxt(args.outfile, res.transpose(), delimiter=',')
 
