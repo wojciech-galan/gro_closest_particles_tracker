@@ -115,7 +115,7 @@ def analysis(infile, frame_count, particle, distance, separate):
                 separate_atom_nums = find_closest(separate_atoms, water_oxygens, distance)
                 how_many_separate.append(len(separate_atom_nums))
         else:
-            atom_nums = set(how_many_left(particle_atoms, water_oxygens, atom_nums, distance)) & atom_nums
+            atom_nums = how_many_left(particle_atoms, water_oxygens, atom_nums, distance) & atom_nums
             how_many.append(len(atom_nums))
             if separate:
                 separate_atom_nums = how_many_left(separate_atoms, water_oxygens, separate_atom_nums, distance) \
