@@ -120,7 +120,7 @@ def analysis(infile, frame_count, particle, distance, separate):
             if separate:
                 separate_atom_nums = how_many_left(separate_atoms, water_oxygens, separate_atom_nums, distance) \
                                         & separate_atom_nums
-                how_many_separate.append(separate_atom_nums)
+                how_many_separate.append(len(separate_atom_nums))
         i += 1
     ar = np.array([how_many[x:x + frame_count] for x in range(0, len(how_many) / frame_count * frame_count, frame_count)])
     if separate:
